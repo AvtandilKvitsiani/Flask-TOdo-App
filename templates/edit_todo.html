@@ -1,0 +1,25 @@
+from datetime import datetime
+
+# ... (other imports and code)
+
+@app.route('/edit_todo/<int:todo_id>', methods=['GET', 'POST'])
+def edit_todo(todo_id):
+    todo = Todo.query.get(todo_id)
+
+    if request.method == 'POST':
+        # Create a new todo with the updated description
+        new_todo = Todo(
+            description=request.form['description'],
+            completed=todo.completed,
+            date_created=todo.date_created 
+        )
+
+        # Add the new todo and delete the old one
+        db.session.add(new_todo)
+        db.session.delete(todo)
+        db.session.commit()
+
+        flash('Todo updated successfully', 'info')
+        return redirect(url_for('home'))
+
+    return render_template('edit_todo.html', todo=todo)
